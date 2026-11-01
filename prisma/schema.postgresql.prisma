@@ -1,0 +1,164 @@
+// SubscriptIQ PostgreSQL Production Schema
+// For deployment to Neon, Supabase, or AWS RDS PostgreSQL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  passwordHash String
+  name         String
+  role         String      @default("SUPPORT_AGENT") // ADMIN, MANAGER, SUPPORT_AGENT
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  auditLogs    AuditLog[]
+
+  @@map("users")
+}
+
+model Customer {
+  id            String         @id @default(uuid())
+  fullName      String
+  email         String         @unique
+  companyName   String
+  contactNumber String?
+  status        String         @default("ACTIVE") // ACTIVE, INACTIVE, CHURNED
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  subscriptions Subscription[]
+  usageRecords  UsageRecord[]
+  invoices      Invoice[]
+  billingEvents BillingEvent[]
+
+  @@map("customers")
+}
+
+model SubscriptionPlan {
+  id              String         @id @default(uuid())
+  name            String         @unique
+  description     String
+  monthlyPrice    Float
+  annualPrice     Float
+  billingInterval String         @default("MONTHLY") // MONTHLY, ANNUAL
+  features        String         // JSON string array of features
+  maxUsageLimit   Int            // e.g. 100,000 requests or storage units
+  status          String         @default("ACTIVE") // ACTIVE, INACTIVE, ARCHIVED
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  subscriptions   Subscription[]
+
+  @@map("subscription_plans")
+}
+
+model Subscription {
+  id               String           @id @default(uuid())
+  customerId       String
+  planId           String
+  startDate        DateTime         @default(now())
+  renewalDate      DateTime
+  billingCycle     String           @default("MONTHLY") // MONTHLY, ANNUAL
+  status           String           @default("ACTIVE")  // ACTIVE, TRIALING, CANCELLED, PAST_DUE, EXPIRED
+  amount           Float
+  cancellationDate DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  customer         Customer         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  plan             SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
+  usageRecords     UsageRecord[]
+  invoices         Invoice[]
+
+  @@index([customerId])
+  @@index([planId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+model UsageRecord {
+  id             String       @id @default(uuid())
+  subscriptionId String
+  customerId     String
+  metricType     String       // API_REQUESTS, STORAGE_MB, ACTIVE_USERS, TRANSACTIONS
+  amount         Int
+  recordedAt     DateTime     @default(now())
+  notes          String?
+
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  customer       Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@index([customerId])
+  @@index([recordedAt])
+  @@map("usage_records")
+}
+
+model Invoice {
+  id             String         @id @default(uuid())
+  invoiceNumber  String         @unique
+  customerId     String
+  subscriptionId String?
+  amount         Float
+  status         String         @default("UNPAID") // PAID, UNPAID, VOID, REFUNDED
+  dueDate        DateTime
+  paidAt         DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  customer       Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  subscription   Subscription?  @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  billingEvents  BillingEvent[]
+
+  @@index([customerId])
+  @@index([status])
+  @@map("invoices")
+}
+
+model BillingEvent {
+  id             String    @id @default(uuid())
+  invoiceId      String?
+  customerId     String
+  eventType      String    // PAYMENT_SUCCESS, PAYMENT_FAILED, PAYMENT_REFUNDED, PAYMENT_PENDING
+  amount         Float
+  currency       String    @default("USD")
+  status         String    // SUCCESS, FAILED, REFUNDED, PENDING
+  paymentMethod  String    @default("pm_card_visa")
+  failureReason  String?
+  idempotencyKey String    @unique
+  createdAt      DateTime  @default(now())
+
+  customer       Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  invoice        Invoice?  @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  @@index([customerId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("billing_events")
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  userId        String?
+  userEmail     String
+  action        String   // CREATE, UPDATE, DELETE, CANCEL, SIMULATE_PAYMENT, ROLE_CHANGE
+  entityType    String   // CUSTOMER, PLAN, SUBSCRIPTION, BILLING, USER
+  entityId      String
+  changeSummary String   // Human readable description or JSON summary
+  ipAddress     String?
+  createdAt     DateTime @default(now())
+
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([entityType])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
