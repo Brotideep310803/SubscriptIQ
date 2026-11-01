@@ -84,3 +84,4 @@ flowchart TD
 | **Duplicate Invoicing** | Medium | Medium | Medium | Unique constraints on `invoiceNumber` and `idempotencyKey` prevent duplication. |
 | **Compromised Audit Records** | Low | High | Medium | Audit log routes only expose `GET` methods; no `PUT` or `DELETE` endpoints exist. |
 | **Real Payment Card Leakage** | N/A | Critical | Zero | The system uses mock simulated payment tokens (`pm_card_visa`), never requesting real financial credentials. |
+

@@ -87,3 +87,4 @@ export async function POST(
     return NextResponse.json({ error: "Failed to renew subscription" }, { status: 500 });
   }
 }
+

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   ShieldAlert,
   Search,
@@ -28,7 +28,7 @@ export default function AuditLogsPage() {
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 1, limit: 20 });
 
-  const fetchAuditLogs = async () => {
+  const fetchAuditLogs = useCallback(async () => {
     if (!isAuthorized) return;
     setLoading(true);
     try {
@@ -45,11 +45,11 @@ export default function AuditLogsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAuthorized, page, entityFilter, actionFilter, toast]);
 
   useEffect(() => {
     fetchAuditLogs();
-  }, [page, entityFilter, actionFilter, user]);
+  }, [fetchAuditLogs]);
 
   if (!isAuthorized) {
     return (
@@ -228,3 +228,4 @@ export default function AuditLogsPage() {
     </div>
   );
 }
+

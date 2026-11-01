@@ -144,3 +144,4 @@ export async function DELETE(
     return NextResponse.json({ error: "Failed to delete subscription plan" }, { status: 500 });
   }
 }
+

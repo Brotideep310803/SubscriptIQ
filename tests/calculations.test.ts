@@ -53,3 +53,4 @@ describe("Analytics & KPI Calculation Formulas", () => {
     expect(successRate).toBe(95.0);
   });
 });
+

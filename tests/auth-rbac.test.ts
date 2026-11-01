@@ -62,3 +62,4 @@ describe("Authentication & RBAC Suite", () => {
     expect(ROLE_PERMISSIONS.SUPPORT_AGENT.canViewAuditLogs).toBe(false);
   });
 });
+

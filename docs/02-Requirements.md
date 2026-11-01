@@ -124,3 +124,4 @@ OUTPUTS:
 5. **Support Agent Role Infiltration**:
    - *Scenario*: Support agent manually sends GET request to `/api/analytics/revenue` or `/api/dashboard/summary`.
    - *Handling*: API middleware intercepts request; sensitive financial numbers are either masked or rejected with HTTP 403 Forbidden.
+

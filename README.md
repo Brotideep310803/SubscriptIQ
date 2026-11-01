@@ -242,3 +242,4 @@ Comprehensive technical documentation is organized in the [`docs/`](./docs) dire
 ## License
 
 This project is licensed under the MIT License. Developed for software engineering internship portfolio evaluation.
+

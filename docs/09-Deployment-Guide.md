@@ -102,3 +102,4 @@ After deployment, perform the initial verification run:
 | `PrismaClientInitializationError: Can't reach database server` | Incorrect `DATABASE_URL` or SSL mode disabled | Ensure `?sslmode=require` is appended to the connection string and whitelist `0.0.0.0/0` in DB provider firewall. |
 | `Invalid JWT signature / 401 on reload` | Stale or missing `JWT_SECRET` | Verify `JWT_SECRET` is defined in production environment variables and is at least 32 characters. |
 | `Connection pool exhausted` | Too many serverless functions without connection pooling | Enable PgBouncer or use Prisma Accelerate / Neon pooled connection string on port 6543 / pooled host. |
+

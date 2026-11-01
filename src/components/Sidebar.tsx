@@ -187,3 +187,4 @@ export function Sidebar({ mobileOpen, onClose }: { mobileOpen?: boolean; onClose
     </>
   );
 }
+

@@ -110,3 +110,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Failed to process billing event" }, { status: 500 });
   }
 }
+

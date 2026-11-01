@@ -131,3 +131,4 @@ SubscriptIQ enforces standardized RESTful principles across all endpoints:
    - `409 Conflict`: Business constraint breached (e.g. duplicate idempotency key or deleting a plan with active subscribers).
    - `500 Internal Server Error`: Unhandled database or system exception.
 3. **Audit Hooks**: Mutating operations (`POST`, `PUT`, `DELETE`) automatically invoke `recordAuditLog` to persist a tamper-proof audit trail entry in the same cycle.
+

@@ -135,3 +135,4 @@ export function TopNavbar({ onMenuClick }: { onMenuClick: () => void }) {
     </header>
   );
 }
+

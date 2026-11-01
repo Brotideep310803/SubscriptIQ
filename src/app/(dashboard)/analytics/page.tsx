@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   BarChart3,
   TrendingUp,
@@ -42,7 +42,7 @@ export default function AnalyticsPage() {
   const [churnData, setChurnData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     if (!isAuthorized) return;
     setLoading(true);
     try {
@@ -60,11 +60,11 @@ export default function AnalyticsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAuthorized, toast]);
 
   useEffect(() => {
     fetchAnalytics();
-  }, [user]);
+  }, [fetchAnalytics]);
 
   const handleExportCSV = (type: "customers" | "subscriptions" | "invoices") => {
     window.location.href = `/api/analytics/export?type=${type}`;
@@ -323,3 +323,4 @@ export default function AnalyticsPage() {
     </div>
   );
 }
+

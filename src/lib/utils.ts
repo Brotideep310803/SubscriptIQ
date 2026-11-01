@@ -37,3 +37,4 @@ export function formatDateTime(date: string | Date | null | undefined): string {
     minute: "2-digit",
   });
 }
+

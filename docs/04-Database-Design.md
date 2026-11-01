@@ -200,3 +200,4 @@ To guarantee ACID guarantees across multi-table operations, SubscriptIQ executes
    - Step 2: Insert `BillingEvent`.
    - Step 3: Synchronize target `Invoice` status (`PAID`, `UNPAID`, or `REFUNDED`).
    - Step 4: Write `AuditLog` entry.
+

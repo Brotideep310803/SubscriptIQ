@@ -331,3 +331,4 @@ Retrieves identity and role information for the currently active session.
   "pagination": { "total": 42, "page": 1, "limit": 20, "totalPages": 3 }
 }
 ```
+

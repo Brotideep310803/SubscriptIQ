@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   CreditCard,
@@ -44,7 +44,7 @@ export default function BillingPage() {
   const [simIdempotencyKey, setSimIdempotencyKey] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchBillingData = async () => {
+  const fetchBillingData = useCallback(async () => {
     setLoading(true);
     try {
       const url =
@@ -63,9 +63,9 @@ export default function BillingPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab, page, eventTypeFilter, toast]);
 
-  const fetchCustomerList = async () => {
+  const fetchCustomerList = useCallback(async () => {
     try {
       const res = await fetch("/api/customers?limit=100");
       if (res.ok) {
@@ -76,15 +76,15 @@ export default function BillingPage() {
     } catch (err) {
       console.error("Failed to load customer dropdown", err);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchBillingData();
-  }, [activeTab, page, eventTypeFilter]);
+  }, [fetchBillingData]);
 
   useEffect(() => {
     if (isAdmin) fetchCustomerList();
-  }, [isAdmin]);
+  }, [isAdmin, fetchCustomerList]);
 
   const openSimulatorModal = () => {
     const key = `evt_sim_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
@@ -523,3 +523,4 @@ export default function BillingPage() {
     </div>
   );
 }
+
